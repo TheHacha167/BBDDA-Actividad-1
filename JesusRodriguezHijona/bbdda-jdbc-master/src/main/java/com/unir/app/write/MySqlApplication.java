@@ -46,7 +46,7 @@ public class MySqlApplication {
                     System.getProperty("user.dir"));
             log.info("Conexión establecida con la base de datos MySQL");
 // /* 
-            // Eliminar datos en el orden correcto para evitar conflictos de claves foráneas
+            // Eliminar datos en el orden correcto para evitar conflictos de claves foráneas y esas cosas
         try (Statement stmt = connection.createStatement()) {
             stmt.executeUpdate("DELETE FROM PrecioCarburante");
             stmt.executeUpdate("DELETE FROM EstacionServicio");
@@ -158,7 +158,7 @@ public class MySqlApplication {
     private static List<MySqlComunidad> readComunidades() {
 
         try (CSVReader reader = new CSVReaderBuilder(
-                new FileReader("C:\\Users\\theha\\OneDrive\\Escritorio\\uni\\Unir\\Tercero\\1Q\\BBDDA\\Trabajos\\Primer trabajo\\Comnuidad.csv"))
+                new FileReader("Comnuidad.csv"))
                 .withCSVParser(
                         new CSVParserBuilder()
                                 .withSeparator(';')
@@ -255,7 +255,7 @@ public class MySqlApplication {
     private static List<MySqlProvincia> readProvincias() {
 
         try (CSVReader reader = new CSVReaderBuilder(
-                new FileReader("C:\\Users\\theha\\OneDrive\\Escritorio\\uni\\Unir\\Tercero\\1Q\\BBDDA\\Trabajos\\Primer trabajo\\Provincia.csv"))
+                new FileReader("Provincia.csv"))
                 .withCSVParser(
                         new CSVParserBuilder()
                                 .withSeparator(';')
@@ -354,7 +354,7 @@ public class MySqlApplication {
     private static List<MySqlMunicipio> readMunicipios() {
 
         try (CSVReader reader = new CSVReaderBuilder(
-                new FileReader("C:\\Users\\theha\\OneDrive\\Escritorio\\uni\\Unir\\Tercero\\1Q\\BBDDA\\Trabajos\\Primer trabajo\\Municipio.csv"))
+                new FileReader("Municipio.csv"))
                 .withCSVParser(
                         new CSVParserBuilder()
                                 .withSeparator(';')
@@ -455,7 +455,7 @@ public class MySqlApplication {
     private static List<MySqlLocalidad> readLocalidades() {
 
         try (CSVReader reader = new CSVReaderBuilder(
-                new FileReader("C:\\Users\\theha\\OneDrive\\Escritorio\\uni\\Unir\\Tercero\\1Q\\BBDDA\\Trabajos\\Primer trabajo\\Localidad.csv"))
+                new FileReader("Localidad.csv"))
                 .withCSVParser(
                         new CSVParserBuilder()
                                 .withSeparator(';')
@@ -651,7 +651,7 @@ public class MySqlApplication {
     private static List<MySqlRotulo> readRotulo() {
 
         try (CSVReader reader = new CSVReaderBuilder(
-                new FileReader("C:\\Users\\theha\\OneDrive\\Escritorio\\uni\\Unir\\Tercero\\1Q\\BBDDA\\Trabajos\\Primer trabajo\\Rotulo.csv"))
+                new FileReader("Rotulo.csv"))
                 .withCSVParser(
                         new CSVParserBuilder()
                                 .withSeparator(';')
@@ -745,7 +745,7 @@ public class MySqlApplication {
 private static List<MySqlTipoEstacion> readTipoEstacion() {
 
     try (CSVReader reader = new CSVReaderBuilder(
-            new FileReader("C:\\Users\\theha\\OneDrive\\Escritorio\\uni\\Unir\\Tercero\\1Q\\BBDDA\\Trabajos\\Primer trabajo\\TipoEstacion.csv"))
+            new FileReader("TipoEstacion.csv"))
             .withCSVParser(
                     new CSVParserBuilder()
                             .withSeparator(';')
@@ -837,7 +837,7 @@ private static void insertDataTipoEstacion(Connection connection, List<MySqlTipo
 private static List<MySqlTipoVenta> readTipoVenta() {
 
     try (CSVReader reader = new CSVReaderBuilder(
-            new FileReader("C:\\Users\\theha\\OneDrive\\Escritorio\\uni\\Unir\\Tercero\\1Q\\BBDDA\\Trabajos\\Primer trabajo\\TipoVenta.csv"))
+            new FileReader("TipoVenta.csv"))
             .withCSVParser(
                     new CSVParserBuilder()
                             .withSeparator(';')
@@ -929,7 +929,7 @@ private static void insertDataTipoVenta(Connection connection, List<MySqlTipoVen
 private static List<MySqlCarburante> readCarburante() {
 
     try (CSVReader reader = new CSVReaderBuilder(
-            new FileReader("C:\\Users\\theha\\OneDrive\\Escritorio\\uni\\Unir\\Tercero\\1Q\\BBDDA\\Trabajos\\Primer trabajo\\Carburante.csv"))
+            new FileReader("Carburante.csv"))
             .withCSVParser(
                     new CSVParserBuilder()
                             .withSeparator(';')
@@ -1078,7 +1078,7 @@ private static BigDecimal parseBigDecimal(String value) {
 private static List<MySqlEstacionServicio> readEstacionServicio() {
 
     try (CSVReader reader = new CSVReaderBuilder(
-            new FileReader("C:\\Users\\theha\\OneDrive\\Escritorio\\uni\\Unir\\Tercero\\1Q\\BBDDA\\Trabajos\\Primer trabajo\\EstacionServicio.csv"))
+            new FileReader("EstacionServicio.csv"))
             .withCSVParser(
                     new CSVParserBuilder()
                             .withSeparator(';')
@@ -1231,7 +1231,7 @@ private static void insertDataEstacionServicio(Connection connection, List<MySql
 private static List<MySqlPrecioCarburante> readPrecioCarburante() {
 
     try (CSVReader reader = new CSVReaderBuilder(
-            new FileReader("C:\\Users\\theha\\OneDrive\\Escritorio\\uni\\Unir\\Tercero\\1Q\\BBDDA\\Trabajos\\Primer trabajo\\PrecioCarburante.csv"))
+            new FileReader("PrecioCarburante.csv"))
             .withCSVParser(
                     new CSVParserBuilder()
                             .withSeparator(';')
