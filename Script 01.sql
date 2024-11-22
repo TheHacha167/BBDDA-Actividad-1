@@ -105,3 +105,98 @@ CREATE TABLE PrecioCarburante (
     FOREIGN KEY (estacion_id) REFERENCES EstacionServicio(estacion_id), -- Relación con EstacionServicio
     FOREIGN KEY (carburante_id) REFERENCES Carburante(carburante_id) -- Relación con Carburante
 );
+
+-- CONSULTAS
+
+-- Empresa con más estaciones de servicio terrestres
+-- Esta consulta busca el rótulo (empresa) que tiene más estaciones terrestres.
+SELECT R.nombre AS Empresa, COUNT(E.estacion_id) AS TotalEstaciones
+FROM EstacionServicio E
+JOIN Rotulo R ON E.rotulo_id = R.rotulo_id
+JOIN TipoEstacion T ON E.tipo_estacion_id = T.tipo_estacion_id
+WHERE T.descripcion = 'Terrestre'  -- Filtra solo estaciones terrestres
+GROUP BY R.nombre  -- Agrupa por empresa
+ORDER BY TotalEstaciones DESC  -- Ordena por el número de estaciones en orden descendente
+LIMIT 1;  -- Devuelve la empresa con más estaciones terrestres
+
+
+
+-- Empresa con más estaciones de servicio marítimas
+-- Similar a la consulta anterior, pero busca las estaciones marítimas.
+SELECT R.nombre AS Empresa, COUNT(E.estacion_id) AS TotalEstaciones
+FROM EstacionServicio E
+JOIN Rotulo R ON E.rotulo_id = R.rotulo_id
+JOIN TipoEstacion T ON E.tipo_estacion_id = T.tipo_estacion_id
+WHERE T.descripcion = 'Marítima'  -- Filtra solo estaciones marítimas
+GROUP BY R.nombre  -- Agrupa por empresa
+ORDER BY TotalEstaciones DESC  -- Ordena por el número de estaciones en orden descendente
+LIMIT 1;  -- Devuelve la empresa con más estaciones marítimas
+
+
+
+-- Localización, empresa y margen de la estación con el precio más bajo para "Gasolina 95 E5" en la Comunidad de Madrid
+-- Encuentra la estación con el precio más bajo de "Gasolina 95 E5" en Madrid.
+SELECT
+    L.nombre AS Localidad,  -- Nombre de la localidad
+    R.nombre AS Empresa,  -- Nombre de la empresa
+    M.descripcion AS Margen,  -- Margen de la estación
+    PC.precio AS Precio  -- Precio del carburante
+FROM PrecioCarburante PC
+JOIN EstacionServicio E ON PC.estacion_id = E.estacion_id
+JOIN Rotulo R ON E.rotulo_id = R.rotulo_id
+JOIN Margen M ON E.margen_id = M.margen_id
+JOIN Carburante CB ON PC.carburante_id = CB.carburante_id
+JOIN Localidad L ON E.localidad_id = L.localidad_id
+JOIN Municipio MU ON L.municipio_id = MU.municipio_id
+JOIN Provincia P ON MU.provincia_id = P.provincia_id
+JOIN Comunidad C ON P.comunidad_id = C.comunidad_id
+WHERE CB.nombre = 'Precio gasolina 95 E5'  -- Filtra el carburante "Gasolina 95 E5"
+  AND C.nombre LIKE 'Madrid'  -- Filtra la comunidad de Madrid
+ORDER BY PC.precio ASC  -- Ordena por precio ascendente
+LIMIT 1;  -- Devuelve solo la estación con el precio más bajo
+
+
+
+-- Localización, empresa y margen de la estación con el precio más bajo para "Gasóleo A" cerca del centro de Albacete (radio de 10 km)
+-- Encuentra la estación más cercana al centro de Albacete con el precio más bajo de "Gasóleo A".
+SELECT
+    L.nombre AS Localidad,  -- Nombre de la localidad
+    R.nombre AS Empresa,  -- Nombre de la empresa
+    M.descripcion AS Margen,  -- Margen de la estación
+    PC.precio AS Precio,  -- Precio del carburante
+    (6371000 * ACOS(  -- Calcula la distancia en metros entre dos puntos geográficos
+        COS(RADIANS(38.995548)) * COS(RADIANS(E.latitud)) *
+        COS(RADIANS(E.longitud) - RADIANS(-1.858542)) +
+        SIN(RADIANS(38.995548)) * SIN(RADIANS(E.latitud))
+    )) AS Distancia
+FROM PrecioCarburante PC
+JOIN EstacionServicio E ON PC.estacion_id = E.estacion_id
+JOIN Rotulo R ON E.rotulo_id = R.rotulo_id
+JOIN Localidad L ON E.localidad_id = L.localidad_id
+JOIN Municipio MU ON L.municipio_id = MU.municipio_id
+JOIN Provincia P ON MU.provincia_id = P.provincia_id
+JOIN Margen M ON E.margen_id = M.margen_id
+WHERE PC.carburante_id = 6  -- Filtra el carburante "Gasóleo A"
+  AND P.nombre = 'Albacete'  -- Filtra la provincia de Albacete
+HAVING Distancia <= 10000  -- Filtra estaciones en un radio de 10 km
+ORDER BY PC.precio ASC  -- Ordena por precio ascendente
+LIMIT 1;  -- Devuelve solo la estación más barata dentro del radio
+
+
+
+-- Provincia de la estación marítima con el combustible "Gasolina 95 E5" más caro
+-- Encuentra la provincia con el precio más alto de "Gasolina 95 E5" en estaciones marítimas.
+SELECT
+    P.nombre AS Provincia,  -- Nombre de la provincia
+    MAX(PC.precio) AS PrecioMaximo  -- Precio más alto
+FROM PrecioCarburante PC
+JOIN EstacionServicio E ON PC.estacion_id = E.estacion_id
+JOIN Localidad L ON E.localidad_id = L.localidad_id
+JOIN Municipio M ON L.municipio_id = M.municipio_id
+JOIN Provincia P ON M.provincia_id = P.provincia_id
+JOIN TipoEstacion TE ON E.tipo_estacion_id = TE.tipo_estacion_id
+WHERE TE.tipo_estacion_id = 2  -- Filtra solo estaciones marítimas
+  AND PC.carburante_id = 1  -- Filtra el carburante "Gasolina 95 E5"
+GROUP BY P.nombre  -- Agrupa por provincia
+ORDER BY PrecioMaximo DESC  -- Ordena por precio descendente
+LIMIT 1;  -- Devuelve la provincia con el precio más alto
