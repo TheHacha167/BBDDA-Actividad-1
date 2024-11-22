@@ -25,6 +25,7 @@ import java.math.BigDecimal;
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.time.format.DateTimeFormatter;
@@ -1091,24 +1092,38 @@ private static List<MySqlEstacionServicio> readEstacionServicio() {
         reader.skip(1); // Saltamos la primera línea del encabezado
 
         while ((nextLine = reader.readNext()) != null) {
-            MySqlEstacionServicio estacionServicio = new MySqlEstacionServicio(
-                    parseInteger(nextLine[0]),  // estacion_id
-                    parseInteger(nextLine[1]),  // localidad_id
-                    parseInteger(nextLine[2]),  // tipo_estacion_id
-                    nextLine[3],                // codigo_postal (CP)
-                    nextLine[4],                // direccion
-                    parseInteger(nextLine[5]),  // margen_id
-                    parseBigDecimal(nextLine[7]), // latitud
-                    parseBigDecimal(nextLine[6]), // longitud
-                    parseTimestamp(nextLine[8]), // toma_de_datos
-                    parseInteger(nextLine[9]),  // rotulo_id
-                    parseInteger(nextLine[10]), // tipo_venta_id
-                    nextLine[11],               // rem
-                    nextLine[12],               // horario
-                    nextLine[13]                // tipo_servicio
-            );
-            estacionesServicio.add(estacionServicio);
-        }
+    try {
+        // Procesa las columnas de latitud y longitud
+        BigDecimal latitud = parseBigDecimal(nextLine[6]); // Asegúrate de usar el índice correcto
+        BigDecimal longitud = parseBigDecimal(nextLine[7]); // Asegúrate de usar el índice correcto
+        
+        // Log para depuración
+        //log.info("Latitud procesada: " + latitud + ", Longitud procesada: " + longitud + 
+        //         ", Línea: " + Arrays.toString(nextLine));
+        
+        // Crea el objeto MySqlEstacionServicio con los datos procesados
+        MySqlEstacionServicio estacionServicio = new MySqlEstacionServicio(
+                parseInteger(nextLine[0]),  // estacion_id
+                parseInteger(nextLine[1]),  // localidad_id
+                parseInteger(nextLine[2]),  // tipo_estacion_id
+                nextLine[3],                // codigo_postal (CP)
+                nextLine[4],                // direccion
+                parseInteger(nextLine[5]),  // margen_id
+                latitud,                    // latitud
+                longitud,                   // longitud
+                parseTimestamp(nextLine[8]), // toma_de_datos
+                parseInteger(nextLine[9]),  // rotulo_id
+                parseInteger(nextLine[10]), // tipo_venta_id
+                nextLine[11],               // rem
+                nextLine[12],               // horario
+                nextLine[13]                // tipo_servicio
+        );
+
+        estacionesServicio.add(estacionServicio);
+    } catch (Exception e) {
+        log.error("Error procesando la línea: " + Arrays.toString(nextLine), e);
+    }
+}
         return estacionesServicio;
         } catch (IOException | CsvValidationException e) {
             log.error("Error al leer el fichero CSV", e);
@@ -1138,7 +1153,7 @@ private static boolean doesRotuloExist(Connection connection, int rotuloId) thro
  */
 private static void insertDataEstacionServicio(Connection connection, List<MySqlEstacionServicio> estacionesServicio) throws SQLException {
     String insertSql = "INSERT INTO EstacionServicio (estacion_id, localidad_id, tipo_estacion_id, codigo_postal, " +
-            "direccion, margen_id,latitud ,longitud , toma_de_datos, rotulo_id, tipo_venta_id, rem, horario, tipo_servicio) " +
+            "direccion, margen_id,longitud ,latitud , toma_de_datos, rotulo_id, tipo_venta_id, rem, horario, tipo_servicio) " +
             "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
     int batchSize = 1500;
@@ -1191,6 +1206,23 @@ private static void insertDataEstacionServicio(Connection connection, List<MySql
                 insertStatement.setString(13, estacionServicio.getHorario());
                 insertStatement.setString(14, estacionServicio.getTipoServicio());
 
+                if (estacionServicio.getLatitud() == null || estacionServicio.getLongitud() == null) {
+                    log.warn("Saltando estación con coordenadas nulas: " +
+                             "Estación ID: " + estacionServicio.getEstacionId() +
+                             ", Latitud: " + estacionServicio.getLatitud() +
+                             ", Longitud: " + estacionServicio.getLongitud()+
+                             ", Dirección: " + estacionServicio.getDireccion());
+                    continue;
+                }
+                if (estacionServicio.getLatitud().doubleValue() < -90 || estacionServicio.getLatitud().doubleValue() > 90 ||
+                    estacionServicio.getLongitud().doubleValue() < -180 || estacionServicio.getLongitud().doubleValue() > 180) {
+                    log.warn("Saltando estación con coordenadas fuera de rango: " +
+                             "Estación ID: " + estacionServicio.getEstacionId() +
+                             ", Latitud: " + estacionServicio.getLatitud() +
+                             ", Longitud: " + estacionServicio.getLongitud());
+                    continue;
+                }
+                
                 insertStatement.addBatch();
 
             if (++count % batchSize == 0) {

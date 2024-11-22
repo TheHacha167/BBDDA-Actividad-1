@@ -15,8 +15,8 @@ public class MySqlEstacionServicio {
     private String codigoPostal;
     private String direccion;
     private Integer margenId;
-    private BigDecimal latitud;
     private BigDecimal longitud;
+    private BigDecimal latitud;
     private Timestamp tomaDeDatos; // Para que no haya problemas con la fecha
     private int rotuloId;
     private Integer tipoVentaId;
