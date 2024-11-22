@@ -6,7 +6,12 @@ Incluye datos de comunidades, provincias, municipios, localidades, estaciones de
 consultas avanzadas como análisis de precios, localización y estadísticas de empresas.
 
 ---
+## Diagrama Entidad-Relación
+El diseño de la base de datos se representa en el siguiente diagrama ER, que describe las tablas principales y sus relaciones:
 
+![Diagrama ER](DiagramaER.png)
+
+---
 ## Estructura del Proyecto
 El proyecto incluye:
 
