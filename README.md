@@ -5,7 +5,6 @@ Este proyecto implementa una base de datos relacional diseñada para gestionar i
 Incluye datos de comunidades, provincias, municipios, localidades, estaciones de servicio y precios de carburantes, permitiendo realizar 
 consultas avanzadas como análisis de precios, localización y estadísticas de empresas.
 
-
 ---
 
 ## Estructura del Proyecto
@@ -52,26 +51,8 @@ Se incluyen consultas SQL para responder preguntas clave:
 
 ---
 
-## Ejecución del Proyecto
-1. **Creación de la Base de Datos**:
-    - Usa el script SQL para crear las tablas y relaciones.
-    - Importa los datos de los archivos CSV a las tablas correspondientes.
+## Variables de Entorno
+Por motivos de seguridad, no se proporciona el archivo de configuración `.json`. Es necesario configurar las siguientes variables de entorno para conectar la base de datos:
 
-2. **Ejecución de Consultas**:
-    - Ejecuta las consultas para obtener resultados y analizarlos.
-
-3. **Herramientas Usadas**:
-    - MySQL para la gestión de la base de datos.
-    - DataGRip o DBeaver para la visualización y ejecución de consultas.
-
----
-
-## Resultados Esperados
-1. Generar estadísticas útiles sobre las estaciones de servicio.
-2. Analizar la distribución geográfica de las estaciones.
-
----
-
-## Conclusiones
-Este proyecto demuestra cómo una base de datos bien diseñada puede responder preguntas complejas y aportar valor en análisis de mercado y logística.
-Es una solución adaptable para casos prácticos como planificación de rutas, optimización de costos o toma de decisiones estratégicas.
+- **MYSQL_USER**: Usuario con permisos para acceder a la base de datos.
+- **MYSQL_PASSWORD**: Contraseña del usuario.
