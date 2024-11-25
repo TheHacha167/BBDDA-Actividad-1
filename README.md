@@ -22,9 +22,9 @@ El proyecto incluye:
     - **Localidad**: Localidades asociadas a municipios.
     - **Rotulo**: Marcas comerciales de las estaciones de servicio.
     - **TipoEstacion**: Clasificación de las estaciones (terrestres o marítimas).
-    - **TipoVenta**: Tipos de venta (directa, franquicia, etc.).
+    - **TipoVenta**: Tipos de venta.
     - **Margen**: Información sobre el tipo de margen de la estación.
-    - **EstacionServicio**: Información detallada de cada estación (ubicación, tipo de estación, horarios, servicios, etc.).
+    - **EstacionServicio**: Información detallada de cada estación (ubicación, tipo de estación, horarios, etc.).
     - **Carburante**: Tipos de combustibles ofrecidos.
     - **PrecioCarburante**: Precios de los combustibles en cada estación.
 
