@@ -6,12 +6,14 @@ Incluye datos de comunidades, provincias, municipios, localidades, estaciones de
 consultas avanzadas como análisis de precios, localización y estadísticas de empresas.
 
 ---
+
 ## Diagrama Entidad-Relación
 El diseño de la base de datos se representa en el siguiente diagrama ER, que describe las tablas principales y sus relaciones:
 
 ![Diagrama ER](DiagramaER.png)
 
 ---
+
 ## Estructura del Proyecto
 El proyecto incluye:
 
@@ -40,19 +42,55 @@ El proyecto incluye:
 Se incluyen consultas SQL para responder preguntas clave:
 
 1. **Empresa con más estaciones terrestres**:
-    Identifica qué marca tiene la mayor cantidad de estaciones terrestres.
+    - Busca el rótulo (empresa) que tiene la mayor cantidad de estaciones terrestres.
+    - Índices creados:
+      - `CREATE INDEX idx_tipoestacion_descripcion ON TipoEstacion (descripcion);`
+      - `CREATE INDEX idx_rotulo_nombre ON Rotulo (nombre);`
 
 2. **Empresa con más estaciones marítimas**:
-    Encuentra la marca con mayor presencia en estaciones marítimas.
+    - Encuentra la marca con mayor presencia en estaciones marítimas.
+    - Índices reutilizados:
+      - `idx_tipoestacion_descripcion` para filtrar estaciones marítimas.
+      - `idx_rotulo_nombre` para agrupar por rótulo.
 
 3. **Estación más barata en Madrid para Gasolina 95 E5**:
-    Localiza la estación más económica para este carburante dentro de la Comunidad de Madrid.
+    - Localiza la estación más económica para este carburante dentro de la Comunidad de Madrid.
+    - Índices creados:
+      - `CREATE INDEX idx_carburante_nombre ON Carburante (nombre);`
+      - `CREATE INDEX idx_precio_carburante ON PrecioCarburante (precio, estacion_id);`
+      - `CREATE INDEX idx_comunidad_nombre ON Comunidad (nombre);`
 
 4. **Estación más cercana al centro de Albacete para Gasóleo A**:
-    Calcula la estación más cercana dentro de un radio de 10 km desde el centro de Albacete.
+    - Calcula la estación más cercana dentro de un radio de 10 km desde el centro de Albacete.
+    - Índices creados:
+      - `CREATE INDEX idx_precio_carburante_id ON PrecioCarburante (carburante_id, precio);`
+      - `CREATE INDEX idx_estacion_lat_lon ON EstacionServicio (latitud, longitud);`
+      - `CREATE INDEX idx_provincia_nombre ON Provincia (nombre);`
 
 5. **Provincia con el precio más caro de Gasolina 95 E5 en estaciones marítimas**:
-    Encuentra la provincia con el precio más alto para este carburante en estaciones marítimas.
+    - Encuentra la provincia con el precio más alto para este carburante en estaciones marítimas.
+    - Índices creados:
+      - `CREATE INDEX idx_tipoestacion_id ON TipoEstacion (tipo_estacion_id);`
+      - `CREATE INDEX idx_precio_carburante_id ON PrecioCarburante (carburante_id, precio);`
+      - `CREATE INDEX idx_provincia_nombre ON Provincia (nombre);`
+
+---
+
+## Índices en el Proyecto
+Para optimizar el rendimiento de las consultas, se han implementado los siguientes índices:
+
+1. **Filtros en consultas**:
+    - `idx_tipoestacion_descripcion` para clasificaciones terrestres/marítimas.
+    - `idx_carburante_nombre` para filtrar por tipos de combustible.
+    - `idx_comunidad_nombre` para búsquedas por comunidades autónomas.
+
+2. **Uniones en tablas**:
+    - `idx_precio_carburante` y `idx_precio_carburante_id` para asociar precios con estaciones.
+    - `idx_provincia_nombre` para uniones relacionadas con provincias.
+
+3. **Ordenación y cálculos**:
+    - `idx_precio_carburante` para ordenaciones por precio.
+    - `idx_estacion_lat_lon` para cálculos de distancia en consultas geográficas.
 
 ---
 
@@ -61,3 +99,5 @@ Por motivos de seguridad, no se proporciona el archivo de configuración `.json`
 
 - **MYSQL_USER**: Usuario con permisos para acceder a la base de datos.
 - **MYSQL_PASSWORD**: Contraseña del usuario.
+
+---
